@@ -6,7 +6,7 @@ export class Button extends g.FilledRect {
 	public chkEnable: (ev: g.PointDownEvent) => boolean;
 	public pushEvent: (ev: g.PointUpEvent) => void;
 
-	constructor(scene: g.Scene, s: string[], x: number = 0, y: number = 0, w: number = 100, h: number = 50) {
+	constructor(scene: g.Scene, s: string[], x: number = 0, y: number = 0, w: number = 200, h: number = 100) {
 		super({
 			scene: scene,
 			cssColor: "black",
@@ -23,8 +23,8 @@ export class Button extends g.FilledRect {
 		if (Button.font == null) {
 			Button.font = new g.DynamicFont({
 				game: g.game,
-				fontFamily: g.FontFamily.Monospace,
-				size: 32
+				fontFamily: "monospace",
+				size: 48
 			});
 		}
 
@@ -40,7 +40,7 @@ export class Button extends g.FilledRect {
 			scene: scene,
 			font: Button.font,
 			text: s[0],
-			fontSize: 24,
+			fontSize: 48,
 			textColor: "black",
 			widthAutoAdjust: false,
 			textAlign: g.TextAlign.Center,

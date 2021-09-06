@@ -19,13 +19,11 @@ export class Config extends g.FilledRect {
 		super({
 			scene: scene,
 			cssColor: "black",
-			width: 250,
-			height: 250,
+			width: 500,
+			height: 500,
 			x: x,
 			y: y,
-			scaleX: 2.0,
-			scaleY: 2.0,
-			touchable: true
+			touchable: true,
 		});
 
 		this.chkEnable = (ev) => true;
@@ -34,70 +32,84 @@ export class Config extends g.FilledRect {
 		const font = new g.DynamicFont({
 			game: g.game,
 			fontFamily: "monospace",
-			size: 32
+			size: 48,
 		});
 
 		const base = new g.FilledRect({
 			scene: scene,
-			x: 2, y: 2,
-			width: this.width - 4, height: this.height - 4,
-			cssColor: "white"
+			x: 2,
+			y: 2,
+			width: this.width - 4,
+			height: this.height - 4,
+			cssColor: "white",
 		});
 		this.append(base);
 
-		base.append(new g.Label({
-			scene: scene,
-			font: font,
-			text: "設定",
-			fontSize: 24,
-			textColor: "black",
-			widthAutoAdjust: false,
-			textAlign: "center",
-			width: 250
-		}));
+		base.append(
+			new g.Label({
+				scene: scene,
+				font: font,
+				text: "設定",
+				fontSize: 48,
+				textColor: "black",
+				widthAutoAdjust: false,
+				textAlign: "center",
+				width: 500,
+			})
+		);
 
-		const line = new g.FilledRect({ scene: scene, x: 5, y: 30, width: 235, height: 2, cssColor: "#000000" });
+		const line = new g.FilledRect({ scene: scene, x: 5, y: 60, width: 485, height: 2, cssColor: "#000000" });
 		base.append(line);
 
 		const strVol = ["ＢＧＭ", "効果音"];
 		for (let i = 0; i < 2; i++) {
-			base.append(new g.Label({
-				scene: scene,
-				font: font,
-				text: strVol[i],
-				fontSize: 24,
-				textColor: "black",
-				x: 10, y: 50 + 50 * i
-			}));
+			base.append(
+				new g.Label({
+					scene: scene,
+					font: font,
+					text: strVol[i],
+					fontSize: 48,
+					textColor: "black",
+					x: 20,
+					y: 100 + 100 * i,
+				})
+			);
 
 			const sprVol = new g.FrameSprite({
 				scene: scene,
 				src: scene.assets.volume as g.ImageAsset,
-				width: 32, height: 32,
-				x: 90, y: 50 + 50 * i,
-				frames: [0, 1]
+				width: 64,
+				height: 64,
+				x: 180,
+				y: 100 + 100 * i,
+				frames: [0, 1],
 			});
 			base.append(sprVol);
 
-			const baseVol = new g.E({ scene: scene, x: 130, y: 50 + 50 * i, width: 110, height: 32, touchable: true });
+			const baseVol = new g.E({ scene: scene, x: 260, y: 100 + 100 * i, width: 220, height: 64, touchable: true });
 			base.append(baseVol);
 
-			const lineVol = new g.FilledRect({ scene: scene, x: 0, y: 13, width: 110, height: 6, cssColor: "gray" });
+			const lineVol = new g.FilledRect({ scene: scene, x: 0, y: 26, width: 220, height: 12, cssColor: "gray" });
 			baseVol.append(lineVol);
 
 			const cursorVol = new g.FilledRect({
-				scene: scene, x: 110 * this.volumes[i] - 7, y: 0, width: 15, height: 32, cssColor: "#000000"
+				scene: scene,
+				x: 110 * this.volumes[i] - 7,
+				y: 0,
+				width: 30,
+				height: 64,
+				cssColor: "#000000",
 			});
 			baseVol.append(cursorVol);
 
 			let flgMute = false;
 			baseVol.onPointMove.add((e) => {
-				let posX = e.point.x + (e.startDelta.x/2);
-				if (posX < 7) posX = 7;
-				if (posX > 103) posX = 103;
-				cursorVol.x = posX - 7;
+				let posX = e.point.x + e.startDelta.x;
+				if (posX < 14) posX = 14;
+				if (posX > 206) posX = 206;
+				cursorVol.x = posX - 14;
 				cursorVol.modified();
-				flgMute = (posX-7) === 0;
+				flgMute = posX - 14 === 0;
 			});
 
 			baseVol.onPointUp.add((e) => {
@@ -107,7 +119,7 @@ export class Config extends g.FilledRect {
 					sprVol.frameNumber = 0;
 				}
 				sprVol.modified();
-				this.volumes[i] = cursorVol.x / 110;
+				this.volumes[i] = cursorVol.x / 220;
 
 				if (i === 0 && this.bgmEvent !== undefined) {
 					this.bgmEvent(this.volumes[i]);
@@ -118,18 +130,21 @@ export class Config extends g.FilledRect {
 		const colors = ["gray", "black", "white", "green", "navy"];
 		let colorNum = 0;
 		// 背景色
-		base.append(new g.Label({
-			scene: scene,
-			font: font,
-			text: "背景色",
-			fontSize: 24,
-			textColor: "black",
-			x: 10, y: 150
-		}));
+		base.append(
+			new g.Label({
+				scene: scene,
+				font: font,
+				text: "背景色",
+				fontSize: 48,
+				textColor: "black",
+				x: 20,
+				y: 300,
+			})
+		);
 
-		base.append(new g.FilledRect({ scene: scene, x: 130, y: 150, width: 110, height: 40, cssColor: "#000000" }));
+		base.append(new g.FilledRect({ scene: scene, x: 260, y: 300, width: 220, height: 80, cssColor: "#000000" }));
 
-		const sprColor = new g.FilledRect({ scene: scene, x: 132, y: 152, width: 106, height: 36, cssColor: "gray", touchable:true });
+		const sprColor = new g.FilledRect({ scene: scene, x: 264, y: 304, width: 212, height: 72, cssColor: "gray", touchable: true });
 		base.append(sprColor);
 
 		sprColor.onPointDown.add((e) => {
@@ -143,7 +158,7 @@ export class Config extends g.FilledRect {
 		});
 
 		// ランキング表示
-		const btnRank = new Button(scene, ["ランキング"], 2, 198, 130, 45);
+		const btnRank = new Button(scene, ["ランキング"], 4, 396, 260, 90);
 		base.append(btnRank);
 		btnRank.pushEvent = () => {
 			if (typeof window !== "undefined" && window.RPGAtsumaru) {
@@ -152,11 +167,10 @@ export class Config extends g.FilledRect {
 		};
 
 		// 閉じる
-		const btnClose = new Button(scene, ["閉じる"], 138, 198, 105, 45);
+		const btnClose = new Button(scene, ["閉じる"], 276, 396, 210, 90);
 		base.append(btnClose);
 		btnClose.pushEvent = () => {
 			this.hide();
 		};
-
 	}
 }

@@ -55,14 +55,14 @@
 		},
 		"config": {
 			"type": "image",
-			"width": 40,
-			"height": 40,
+			"width": 80,
+			"height": 80,
 			"path": "image/config.png"
 		},
 		"volume": {
 			"type": "image",
-			"width": 64,
-			"height": 32,
+			"width": 128,
+			"height": 64,
 			"path": "image/volume.png"
 		},
 		"Button": {
@@ -109,22 +109,6 @@
 			"height": 720,
 			"path": "image/title.png"
 		},
-		"Actor": {
-			"type": "script",
-			"path": "script/Actor.js",
-			"global": true
-		},
-		"Door": {
-			"type": "script",
-			"path": "script/Door.js",
-			"global": true
-		},
-		"level": {
-			"type": "image",
-			"width": 50,
-			"height": 50,
-			"path": "image/level.png"
-		},
 		"se_clear": {
 			"type": "audio",
 			"path": "audio/se_clear",
@@ -143,11 +127,78 @@
 			"systemId": "sound",
 			"duration": 105
 		},
-		"shadow": {
+		"card": {
 			"type": "image",
-			"width": 120,
-			"height": 18,
-			"path": "image/shadow.png"
+			"path": "image/card.png",
+			"width": 330,
+			"height": 165
+		},
+		"mark": {
+			"type": "image",
+			"path": "image/mark.png",
+			"width": 144,
+			"height": 36
+		},
+		"mark2": {
+			"type": "image",
+			"path": "image/mark2.png",
+			"width": 360,
+			"height": 90
+		},
+		"number2": {
+			"type": "image",
+			"path": "image/number2.png",
+			"width": 468,
+			"height": 90
+		},
+		"Card": {
+			"type": "script",
+			"path": "script/Card.js",
+			"global": true
+		},
+		"CardArea": {
+			"type": "script",
+			"path": "script/CardArea.js",
+			"global": true
+		},
+		"mark3": {
+			"type": "image",
+			"path": "image/mark3.png",
+			"width": 330,
+			"height": 110
+		},
+		"FreeCell": {
+			"type": "script",
+			"path": "script/FreeCell.js",
+			"global": true
+		},
+		"HomeCell": {
+			"type": "script",
+			"path": "script/HomeCell.js",
+			"global": true
+		},
+		"Cascade": {
+			"type": "script",
+			"path": "script/Cascade.js",
+			"global": true
+		},
+		"cursor": {
+			"type": "image",
+			"path": "image/cursor.png",
+			"width": 223,
+			"height": 126
+		},
+		"cursor2": {
+			"type": "image",
+			"path": "image/cursor2.png",
+			"width": 185,
+			"height": 110
+		},
+		"undo": {
+			"type": "image",
+			"path": "image/undo.png",
+			"width": 200,
+			"height": 140
 		}
 	},
 	"moduleMainScripts": {

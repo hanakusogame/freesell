@@ -10,6 +10,10 @@ export class MainScene extends g.Scene {
 	public playSound: (name: string) => void;
 	public isStart = false;
 	public font: g.Font;
+	public isClear: boolean;
+	public level: number;
+	public isAutoMove: boolean;
+	public undoButton: g.FrameSprite;
 
 	constructor(param: GameMainParameterObject) {
 		super({
@@ -26,6 +30,15 @@ export class MainScene extends g.Scene {
 				"config",
 				"volume",
 
+				"cursor",
+				"cursor2",
+				"undo",
+				"card",
+				"mark",
+				"mark2",
+				"mark3",
+				"number2",
+
 				"bgm",
 				"se_start",
 				"se_timeup",
@@ -37,10 +50,13 @@ export class MainScene extends g.Scene {
 		});
 
 		const timeline = new tl.Timeline(this);
-		const timeLimit = 90; // 制限時間
+		const timeLimit = 10; // 制限時間
 		const isDebug = false;
 		let time = 0;
-		const version = "ver. 1.13";
+		const version = "ver. 1.00";
+		this.isClear = false;
+		this.level = 1;
+		this.isAutoMove = false;
 
 		// ミニゲームチャット用モードの取得と乱数シード設定
 		let mode = "";
@@ -91,8 +107,66 @@ export class MainScene extends g.Scene {
 				font: font,
 				fontSize: 24,
 				text: version,
+				textColor: "white",
 				parent: sprTitle,
 			});
+
+			// レベルセレクト
+			const cursorLevel = new g.Sprite({
+				scene: this,
+				src: this.asset.getImageById("cursor"),
+				x: 0,
+				y: 0,
+			});
+
+			const sprLevels: g.E[] = [];
+			for (let i = 0; i < 3; i++) {
+				const sprLevel = new g.E({
+					scene: this,
+					x: 205 * i + 580,
+					y: 555,
+					width: 200,
+					height: 126,
+					//cssColor: "yellow",
+					//opacity:0.1,
+					touchable: true,
+					parent: sprTitle,
+				});
+				sprLevel.onPointDown.add(() => {
+					sprLevel.append(cursorLevel);
+					this.level = i + 1;
+				});
+				sprLevels.push(sprLevel);
+			}
+			sprLevels[0].append(cursorLevel);
+
+			//自動移動設定
+			const cursorAuto = new g.Sprite({
+				scene: this,
+				src: this.asset.getImageById("cursor2"),
+				x: 0,
+				y: 0,
+				//parent:sprTitle,
+			});
+
+			const sprAutos: g.E[] = [];
+			for (let i = 0; i < 2; i++) {
+				const spr = new g.E({
+					scene: this,
+					x: 210 * i + 60,
+					y: 575,
+					width: 200,
+					height: 126,
+					touchable: true,
+					parent: sprTitle,
+				});
+				spr.onPointDown.add(() => {
+					spr.append(cursorAuto);
+					this.isAutoMove = i === 0;
+				});
+				sprAutos.push(spr);
+			}
+			sprAutos[0].append(cursorAuto);
 
 			timeline
 				.create(sprTitle, {
@@ -106,7 +180,7 @@ export class MainScene extends g.Scene {
 
 			//コンフィグ画面
 			const config = new Config(this, 780, 80);
-			this.append(config);
+
 			config.bg = bg;
 			config.hide();
 
@@ -120,8 +194,7 @@ export class MainScene extends g.Scene {
 					scene: this,
 					src: this.asset.getImageById("config"),
 					x: 1200,
-					scaleX: 2,
-					scaleY: 2.0,
+					opacity: 0.3,
 					touchable: true,
 					parent: this,
 				});
@@ -160,8 +233,8 @@ export class MainScene extends g.Scene {
 					src: this.asset.getImageById("score"),
 					width: 192,
 					height: 64,
-					x: 640,
-					y: 10,
+					x: 340,
+					y: 650,
 					parent: this,
 				});
 
@@ -171,8 +244,8 @@ export class MainScene extends g.Scene {
 					text: "0P",
 					font: font,
 					fontSize: 32,
-					x: 750,
-					y: 10,
+					x: 450,
+					y: 650,
 					width: 450,
 					widthAutoAdjust: false,
 					textAlign: "right",
@@ -183,8 +256,8 @@ export class MainScene extends g.Scene {
 				new g.Sprite({
 					scene: this,
 					src: this.asset.getImageById("time"),
-					x: 5,
-					y: 5,
+					x: 1020,
+					y: 645,
 					parent: this,
 				});
 
@@ -194,8 +267,21 @@ export class MainScene extends g.Scene {
 					text: "0",
 					font: font,
 					fontSize: 32,
-					x: 105,
-					y: 10,
+					x: 1100,
+					y: 650,
+					parent: this,
+				});
+
+				//アンドゥボタン
+				this.undoButton = new g.FrameSprite({
+					scene: this,
+					src: this.asset.getImageById("undo"),
+					width: 200,
+					height: 70,
+					x: 10,
+					y: 640,
+					frames: [0, 1],
+					touchable: true,
 					parent: this,
 				});
 
@@ -222,13 +308,49 @@ export class MainScene extends g.Scene {
 					parent: this,
 				});
 
+				const fontClear = new g.DynamicFont({
+					game: g.game,
+					fontFamily: "monospace",
+					size: 50,
+					//strokeWidth: 8, strokeColor: "white",
+					fontWeight: "bold",
+					fontColor: "white",
+				});
+
+				const labelClear = new g.Label({
+					scene: this,
+					text: "",
+					font: fontClear,
+					fontSize: 50,
+					y: 270,
+					width: 800,
+					textAlign: "center",
+					widthAutoAdjust: false,
+					parent: stateSpr,
+				});
+
+				this.append(config);
+
 				let btnReset: Button;
 				let btnRanking: Button;
+				let btnExtend: Button;
 
 				if (param.isAtsumaru || isDebug || mode === "game") {
+					// 継続ボタン
+					btnExtend = new Button(this, ["継続"], 1000, 280, 260);
+					btnExtend.modified();
+					this.append(btnExtend);
+					btnExtend.pushEvent = () => {
+						this.isStart = true;
+						stateSpr.hide();
+						sprFG.opacity = 0;
+						btnReset?.hide();
+						btnRanking?.hide();
+						btnExtend?.hide();
+					};
+
 					// リセットボタン
-					btnReset = new Button(this, ["リセット"], 1000, 520, 130);
-					btnReset.scale(2.0);
+					btnReset = new Button(this, ["リセット"], 1000, 520, 260);
 					btnReset.modified();
 					this.append(btnReset);
 					btnReset.pushEvent = () => {
@@ -236,8 +358,7 @@ export class MainScene extends g.Scene {
 					};
 
 					// ランキングボタン
-					btnRanking = new Button(this, ["ランキング"], 1000, 400, 130);
-					btnRanking.scale(2.0);
+					btnRanking = new Button(this, ["ランキング"], 1000, 400, 260);
 					btnRanking.modified();
 
 					this.append(btnRanking);
@@ -256,15 +377,26 @@ export class MainScene extends g.Scene {
 				};
 
 				const updateHandler = (): void => {
-					if (time < 0) {
+					if (time < 0 || this.isClear) {
+						const showButton = (): void => {
+							btnReset?.show();
+							btnRanking?.show();
+							if (!this.isClear) {
+								btnExtend?.show();
+							}
+						};
+
+						if (this.isClear) {
+							this.addScore(Math.ceil(time));
+						}
+
 						// RPGアツマール環境であればランキングを設定
 						this.setTimeout(() => {
 							if (param.isAtsumaru) {
-								const boardId = 2;
+								const boardId = this.level;
 								const board = window.RPGAtsumaru.scoreboards;
 								board.setRecord(boardId, g.game.vars.gameState.score).then(() => {
-									btnReset?.show();
-									btnRanking?.show();
+									showButton();
 								});
 							}
 
@@ -273,12 +405,19 @@ export class MainScene extends g.Scene {
 								(window as Window).parent.postMessage({ score: g.game.vars.gameState.score, id: 1 }, "*");
 								btnReset.show();
 							}
+
+							if (isDebug) {
+								showButton();
+							}
 						}, 500);
 
 						//終了表示
 						stateSpr.frameNumber = 1;
 						stateSpr.modified();
 						stateSpr.show();
+
+						labelClear.text = this.isClear ? "クリア! 残り" + Math.ceil(time) + "秒" : "";
+						labelClear.invalidate();
 
 						this.isStart = false;
 
@@ -304,6 +443,7 @@ export class MainScene extends g.Scene {
 				// スコア追加
 				this.addScore = (score) => {
 					// if (time < 0) return;
+					if (score === 0) return;
 					g.game.vars.gameState.score += score;
 					timeline.create(this).every((e: number, p: number) => {
 						scoreLabel.text = "" + (g.game.vars.gameState.score - Math.floor(score * (1 - p))) + "P";
@@ -313,12 +453,12 @@ export class MainScene extends g.Scene {
 					// スコア表示用のラベル
 					const label = new g.Label({
 						scene: this,
-						text: "+" + score,
+						text: (score >= 0 ? "+" : "") + score,
 						font: fontRed,
 						fontSize: 32,
-						x: 750,
-						y: 60,
-						width: 410,
+						x: 200,
+						y: 580,
+						width: 610,
 						widthAutoAdjust: false,
 						textAlign: "right",
 						opacity: 0.0,
@@ -342,6 +482,7 @@ export class MainScene extends g.Scene {
 					maingame = new MainGame();
 					base.append(maingame);
 					time = timeLimit;
+					this.isClear = false;
 					timeLabel.text = "" + time;
 					timeLabel.invalidate();
 
@@ -356,6 +497,7 @@ export class MainScene extends g.Scene {
 						stateSpr.hide();
 					}, 1000);
 
+					btnExtend?.hide();
 					btnReset?.hide();
 					btnRanking?.hide();
 
