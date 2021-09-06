@@ -217,7 +217,7 @@
 				"ranking"
 			],
 			"preferredSessionParameters": {
-				"totalTimeLimit": 110
+				"totalTimeLimit": 200
 			}
 		}
 	},
