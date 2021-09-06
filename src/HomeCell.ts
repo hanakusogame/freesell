@@ -23,6 +23,14 @@ export class HomeCell extends CardArea {
 			parent: maingame,
 		});
 
+		new g.Sprite({
+			scene: scene,
+			src: scene.asset.getImageById("a"),
+			x: 0,
+			y: (this.height - 110) / 2,
+			parent: this,
+		});
+
 		//カードを重ねられるかどうか
 		this.isAddCards = (cards) => {
 			if (cards.length !== 1) return false;
@@ -45,7 +53,10 @@ export class HomeCell extends CardArea {
 				const x = this.x;
 				const y = this.y;
 				if (x !== c.x || y !== c.y) {
-					timeline.create(c).wait(c.wait * 100).moveTo(x, y, 200);
+					timeline
+						.create(c)
+						.wait(c.wait * 100)
+						.moveTo(x, y, 200);
 				}
 				maingame.append(c);
 			});

@@ -1,5 +1,6 @@
 import { FilledRect } from "@akashic/akashic-engine";
 import { Button } from "./Button";
+import { MainScene } from "./MainScene";
 import { RPGAtsumaruWindow } from "./parameterObject";
 declare const window: RPGAtsumaruWindow;
 
@@ -15,12 +16,12 @@ export class Config extends g.FilledRect {
 	public volumes: number[] = [0.5, 0.8];
 	public bg: FilledRect;
 
-	constructor(scene: g.Scene, x: number = 0, y: number = 0) {
+	constructor(scene: MainScene, x: number = 0, y: number = 0) {
 		super({
 			scene: scene,
 			cssColor: "black",
 			width: 500,
-			height: 500,
+			height: 700,
 			x: x,
 			y: y,
 			touchable: true,
@@ -157,17 +158,39 @@ export class Config extends g.FilledRect {
 			}
 		});
 
+		base.append(
+			new g.Label({
+				scene: scene,
+				font: font,
+				text: "ランキング",
+				fontSize: 48,
+				textColor: "black",
+				x: 20,
+				y: 385,
+			})
+		);
+
 		// ランキング表示
-		const btnRank = new Button(scene, ["ランキング"], 4, 396, 260, 90);
-		base.append(btnRank);
-		btnRank.pushEvent = () => {
-			if (typeof window !== "undefined" && window.RPGAtsumaru) {
-				window.RPGAtsumaru.scoreboards.display(2);
-			}
+		for (let i = 0; i < 3; i++) {
+			const btnRank = new Button(scene, ["レベル" + (i + 1)], 4, 85 * i + 443, 260, 80);
+			base.append(btnRank);
+			btnRank.pushEvent = () => {
+				if (typeof window !== "undefined" && window.RPGAtsumaru) {
+					window.RPGAtsumaru.scoreboards.display(i + 1);
+				}
+			};
+		}
+
+		// リセット
+		const btnReset = new Button(scene, ["リセット"], 276, 500, 210, 90);
+		base.append(btnReset);
+		btnReset.pushEvent = () => {
+			this.hide();
+			scene.reset();
 		};
 
 		// 閉じる
-		const btnClose = new Button(scene, ["閉じる"], 276, 396, 210, 90);
+		const btnClose = new Button(scene, ["閉じる"], 276, 603, 210, 90);
 		base.append(btnClose);
 		btnClose.pushEvent = () => {
 			this.hide();

@@ -197,6 +197,7 @@ export class MainGame extends g.E {
 			}
 
 			//クリア処理
+			scene.playSound("se_clear");
 			scene.isClear = true;
 		};
 
@@ -260,6 +261,7 @@ export class MainGame extends g.E {
 			}
 
 			const mixAreas = areas.concat(freeCells.concat(homeCells));
+			let isMove = false;
 			for (let i = 0; i < mixAreas.length; i++) {
 				const area = mixAreas[i];
 				if (area === bkArea) continue;
@@ -277,12 +279,19 @@ export class MainGame extends g.E {
 									autoMoveHome();
 								});
 						}
+						scene.playSound("se_move");
+						isMove = true;
 					}
 					break;
 				}
 			}
+			if (!isMove) {
+				scene.playSound("se_miss");
+			}
+
 			bkArea.sortCards();
 		});
+
 		scene.setTimeout(() => {
 			setScore();
 		}, 200);

@@ -8,6 +8,7 @@ declare const window: RPGAtsumaruWindow;
 export class MainScene extends g.Scene {
 	public addScore: (score: number) => void;
 	public playSound: (name: string) => void;
+	public reset: () => void;
 	public isStart = false;
 	public font: g.Font;
 	public isClear: boolean;
@@ -38,6 +39,7 @@ export class MainScene extends g.Scene {
 				"mark2",
 				"mark3",
 				"number2",
+				"a",
 
 				"bgm",
 				"se_start",
@@ -50,13 +52,13 @@ export class MainScene extends g.Scene {
 		});
 
 		const timeline = new tl.Timeline(this);
-		const timeLimit = 10; // 制限時間
+		const timeLimit = 180; // 制限時間
 		const isDebug = false;
 		let time = 0;
 		const version = "ver. 1.00";
 		this.isClear = false;
 		this.level = 1;
-		this.isAutoMove = false;
+		this.isAutoMove = true;
 
 		// ミニゲームチャット用モードの取得と乱数シード設定
 		let mode = "";
@@ -179,7 +181,7 @@ export class MainScene extends g.Scene {
 				});
 
 			//コンフィグ画面
-			const config = new Config(this, 780, 80);
+			const config = new Config(this, 760, 10);
 
 			config.bg = bg;
 			config.hide();
@@ -329,8 +331,6 @@ export class MainScene extends g.Scene {
 					parent: stateSpr,
 				});
 
-				this.append(config);
-
 				let btnReset: Button;
 				let btnRanking: Button;
 				let btnExtend: Button;
@@ -354,7 +354,7 @@ export class MainScene extends g.Scene {
 					btnReset.modified();
 					this.append(btnReset);
 					btnReset.pushEvent = () => {
-						reset();
+						this.reset();
 					};
 
 					// ランキングボタン
@@ -367,7 +367,7 @@ export class MainScene extends g.Scene {
 						//window.RPGAtsumaru.scoreboards.setRecord(1, g.game.vars.gameState.score).then(() => {
 						//window.RPGAtsumaru.scoreboards.display(1);
 						//});
-						window.RPGAtsumaru.scoreboards.display(2);
+						window.RPGAtsumaru.scoreboards.display(this.level);
 					};
 				}
 
@@ -375,6 +375,8 @@ export class MainScene extends g.Scene {
 				this.playSound = (name: string) => {
 					(this.assets[name] as g.AudioAsset).play().changeVolume(config.volumes[1]);
 				};
+
+				this.append(config);
 
 				const updateHandler = (): void => {
 					if (time < 0 || this.isClear) {
@@ -477,7 +479,7 @@ export class MainScene extends g.Scene {
 				};
 
 				//リセット処理
-				const reset = (): void => {
+				this.reset = (): void => {
 					maingame?.destroy();
 					maingame = new MainGame();
 					base.append(maingame);
@@ -511,7 +513,7 @@ export class MainScene extends g.Scene {
 
 					this.onUpdate.add(updateHandler);
 				};
-				reset();
+				this.reset();
 			};
 		});
 	}

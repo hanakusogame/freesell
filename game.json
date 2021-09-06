@@ -89,7 +89,7 @@
 			"type": "audio",
 			"path": "audio/bgm",
 			"systemId": "music",
-			"duration": 38400
+			"duration": 32000
 		},
 		"se_start": {
 			"type": "audio",
@@ -199,6 +199,12 @@
 			"path": "image/undo.png",
 			"width": 200,
 			"height": 140
+		},
+		"a": {
+			"type": "image",
+			"path": "image/a.png",
+			"width": 110,
+			"height": 110
 		}
 	},
 	"moduleMainScripts": {
